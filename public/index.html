@@ -1,0 +1,344 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Solana Perps Funding</title>
+<meta name="description" content="Solana perp funding rates compared with Binance, Bybit and OKX.">
+<meta name="theme-color" content="#0b0b12">
+<style>
+  :root {
+    --bg: #0b0b12;
+    --surface: #13131d;
+    --surface-2: #1a1a27;
+    --border: #262638;
+    --text: #ececf3;
+    --muted: #9a9ab2;
+    --purple: #9945FF;
+    --green: #14F195;
+    --purple-soft: rgba(153, 69, 255, 0.16);
+    --green-soft: rgba(20, 241, 149, 0.12);
+    --warn: #ffb547;
+    --warn-soft: rgba(255, 181, 71, 0.1);
+    --radius: 12px;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap { max-width: 1120px; margin: 0 auto; padding: 32px 16px 48px; }
+
+  header h1 {
+    display: inline-block;
+    margin: 0 0 6px;
+    font-size: clamp(1.5rem, 4vw, 2.1rem);
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, var(--purple), var(--green));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  header p { margin: 0; color: var(--muted); max-width: 62ch; }
+
+  .toolbar {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+    margin: 24px 0 12px;
+  }
+  .search {
+    flex: 1 1 220px; max-width: 320px;
+    padding: 10px 14px;
+    background: var(--surface); color: var(--text);
+    border: 1px solid var(--border); border-radius: 10px;
+    font: inherit;
+  }
+  .search:focus { outline: none; border-color: var(--purple); box-shadow: 0 0 0 3px var(--purple-soft); }
+  .updated { color: var(--muted); font-size: 0.9rem; margin-left: auto; }
+  .updated strong { color: var(--text); font-weight: 500; }
+  .updated.stale strong { color: var(--warn); }
+
+  .notice {
+    margin: 0 0 12px; padding: 10px 14px;
+    border: 1px solid rgba(255, 181, 71, 0.35); border-radius: 10px;
+    background: var(--warn-soft); color: var(--warn); font-size: 0.9rem;
+  }
+  .notice[hidden] { display: none; }
+
+  .table-wrap {
+    overflow-x: auto;
+    border: 1px solid var(--border); border-radius: var(--radius);
+    background: var(--surface);
+  }
+  table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  th, td { padding: 12px 14px; text-align: right; white-space: nowrap; border-bottom: 1px solid var(--border); }
+  tbody tr:last-child td { border-bottom: 0; }
+  tbody tr:hover td { background: var(--surface-2); }
+  th:first-child, td:first-child {
+    text-align: left; position: sticky; left: 0; z-index: 1;
+    background: var(--surface);
+  }
+  tbody tr:hover td:first-child { background: var(--surface-2); }
+
+  thead th { background: var(--surface); font-weight: 600; vertical-align: bottom; padding: 0; }
+  thead th button {
+    all: unset; box-sizing: border-box; cursor: pointer;
+    display: flex; flex-direction: column; align-items: flex-end; gap: 2px;
+    width: 100%; padding: 12px 14px;
+  }
+  thead th:first-child button { align-items: flex-start; }
+  thead th button:focus-visible { outline: 2px solid var(--purple); outline-offset: -2px; border-radius: 6px; }
+  .th-name { display: inline-flex; align-items: center; gap: 4px; }
+  .th-venue { font-size: 0.7rem; font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; color: var(--muted); }
+  .th-venue.solana { color: var(--green); }
+  .arrow { width: 10px; color: var(--muted); font-size: 0.75rem; }
+  th[aria-sort="ascending"] .arrow, th[aria-sort="descending"] .arrow { color: var(--purple); }
+
+  td.asset { font-weight: 600; }
+  td.empty { color: #55556b; }
+
+  td.spread-cell { background: linear-gradient(90deg, var(--purple-soft), var(--green-soft)); }
+  tbody tr:hover td.spread-cell { background: linear-gradient(90deg, rgba(153,69,255,.24), rgba(20,241,149,.18)); }
+  .spread-value { font-size: 1.05rem; font-weight: 700; color: var(--green); }
+  .spread-legs { display: block; font-size: 0.78rem; color: var(--muted); }
+
+  .rate { display: inline-flex; align-items: center; gap: 6px; }
+  .tag {
+    font-size: 0.65rem; font-weight: 700; padding: 1px 6px; border-radius: 999px; letter-spacing: 0.04em;
+  }
+  td.is-long .tag { background: var(--green); color: #04130c; }
+  td.is-short .tag { background: var(--purple); color: #fff; }
+  td.is-long { box-shadow: inset 0 0 0 1px rgba(20, 241, 149, 0.45); }
+  td.is-short { box-shadow: inset 0 0 0 1px rgba(153, 69, 255, 0.6); }
+
+  .status { padding: 32px 16px; text-align: center; color: var(--muted); }
+
+  .legend {
+    display: flex; flex-wrap: wrap; gap: 8px 20px;
+    margin: 12px 0 0; padding: 0; list-style: none;
+    color: var(--muted); font-size: 0.85rem;
+  }
+  .legend .tag { margin-right: 4px; }
+  .legend .long { background: var(--green); color: #04130c; }
+  .legend .short { background: var(--purple); color: #fff; }
+
+  footer {
+    margin-top: 32px; padding-top: 20px; border-top: 1px solid var(--border);
+    color: var(--muted); font-size: 0.85rem;
+  }
+  footer p { margin: 0 0 8px; max-width: 80ch; }
+  footer strong { color: var(--text); }
+
+  @media (max-width: 640px) {
+    body { font-size: 14px; }
+    .wrap { padding-top: 24px; }
+    .search { max-width: none; }
+    .updated { margin-left: 0; width: 100%; }
+    th, td { padding: 10px 12px; }
+    thead th button { padding: 10px 12px; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Solana Perps Funding</h1>
+    <p>Annualized funding (APR) on Solana perps compared with Binance, Bybit and OKX. The best spread always pairs one Solana venue with one CEX.</p>
+  </header>
+
+  <div class="toolbar">
+    <input id="search" class="search" type="search" placeholder="Filter asset (e.g. SOL)" aria-label="Filter by asset" autocomplete="off">
+    <div id="updated" class="updated" aria-live="polite"></div>
+  </div>
+
+  <p id="failed" class="notice" hidden></p>
+
+  <div class="table-wrap">
+    <table>
+      <thead><tr id="head"></tr></thead>
+      <tbody id="body"><tr><td class="status">Loading data…</td></tr></tbody>
+    </table>
+  </div>
+
+  <ul class="legend">
+    <li><span class="tag long">L</span>go long (lower APR)</li>
+    <li><span class="tag short">S</span>go short (higher APR)</li>
+    <li>Positive APR = longs pay shorts</li>
+    <li>APR = hourly rate × 8760, no compounding</li>
+  </ul>
+
+  <footer>
+    <p><strong>Not financial advice.</strong> This dashboard is for informational purposes only. Funding rates change constantly, and large spreads often come with low liquidity.</p>
+    <p>Trading a spread involves trading fees, slippage, transfer costs between exchanges and liquidation risk. Do your own research.</p>
+  </footer>
+</div>
+
+<script>
+(() => {
+  const DATA_URL = "data.json";
+  const REFRESH_MS = 5 * 60 * 1000;
+  const STALE_MS = 3 * 60 * 60 * 1000;
+
+  const EXCHANGE_ORDER = ["velocity", "pacifica", "phoenix", "binance", "bybit", "okx"];
+  const NAMES = {
+    velocity: "Velocity", pacifica: "Pacifica", phoenix: "Phoenix",
+    binance: "Binance", bybit: "Bybit", okx: "OKX",
+  };
+  const TITLES = { velocity: "Velocity (ex-Drift)" };
+
+  const pct = new Intl.NumberFormat("en-US", {
+    style: "percent", minimumFractionDigits: 2, maximumFractionDigits: 2, signDisplay: "exceptZero",
+  });
+  const pctHourly = new Intl.NumberFormat("en-US", {
+    style: "percent", minimumFractionDigits: 5, maximumFractionDigits: 5, signDisplay: "exceptZero",
+  });
+  // Ex.: "Oct 8, 2026, 9:06 PM GMT-3" (no fuso de quem abre a página)
+  const dateFmt = new Intl.DateTimeFormat("en-US", {
+    year: "numeric", month: "short", day: "numeric",
+    hour: "numeric", minute: "2-digit", timeZoneName: "short",
+  });
+
+  const $ = (id) => document.getElementById(id);
+  const name = (ex) => NAMES[ex] || ex.charAt(0).toUpperCase() + ex.slice(1);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+
+  const state = { data: null, exchanges: [], sortKey: "spread", sortDir: "desc", query: "" };
+
+  function exchangesFrom(assets) {
+    const venues = new Map();
+    for (const a of assets) for (const r of a.rates) venues.set(r.exchange, r.venue);
+    const rank = (ex) => {
+      const i = EXCHANGE_ORDER.indexOf(ex);
+      return i === -1 ? (venues.get(ex) === "solana" ? 50 : 100) : i;
+    };
+    return [...venues].map(([exchange, venue]) => ({ exchange, venue }))
+      .sort((a, b) => rank(a.exchange) - rank(b.exchange) || a.exchange.localeCompare(b.exchange));
+  }
+
+  function sortValue(asset, key) {
+    if (key === "asset") return asset.asset;
+    if (key === "spread") return asset.best_spread.spread_apr;
+    const r = asset.rates.find((x) => x.exchange === key);
+    return r ? r.apr : null;
+  }
+
+  function renderHead() {
+    const cols = [
+      { key: "asset", label: "Asset", sub: "" },
+      { key: "spread", label: "Best spread", sub: "Solana × CEX" },
+      ...state.exchanges.map((e) => ({
+        key: e.exchange, label: name(e.exchange), sub: e.venue === "solana" ? "Solana" : "CEX",
+        venue: e.venue, title: TITLES[e.exchange],
+      })),
+    ];
+    $("head").innerHTML = cols.map((c) => {
+      const sorted = state.sortKey === c.key;
+      const aria = sorted ? (state.sortDir === "asc" ? "ascending" : "descending") : "none";
+      const arrow = sorted ? (state.sortDir === "asc" ? "▲" : "▼") : "";
+      return `<th scope="col" aria-sort="${aria}"${c.title ? ` title="${esc(c.title)}"` : ""}>
+        <button type="button" data-key="${esc(c.key)}">
+          <span class="th-venue ${c.venue === "solana" ? "solana" : ""}">${esc(c.sub) || "&nbsp;"}</span>
+          <span class="th-name">${esc(c.label)}<span class="arrow" aria-hidden="true">${arrow}</span></span>
+        </button></th>`;
+    }).join("");
+  }
+
+  function renderBody() {
+    const colCount = state.exchanges.length + 2;
+    const q = state.query.trim().toUpperCase();
+    const rows = state.data.assets.filter((a) => !q || a.asset.toUpperCase().includes(q));
+
+    const dir = state.sortDir === "asc" ? 1 : -1;
+    rows.sort((a, b) => {
+      const va = sortValue(a, state.sortKey), vb = sortValue(b, state.sortKey);
+      if (va === null && vb === null) return 0;
+      if (va === null) return 1;          // vazios sempre no fim
+      if (vb === null) return -1;
+      return (typeof va === "string" ? va.localeCompare(vb) : va - vb) * dir;
+    });
+
+    if (!rows.length) {
+      $("body").innerHTML = `<tr><td class="status" colspan="${colCount}">No assets match “${esc(state.query)}”.</td></tr>`;
+      return;
+    }
+
+    $("body").innerHTML = rows.map((a) => {
+      const s = a.best_spread;
+      const cells = state.exchanges.map(({ exchange }) => {
+        const r = a.rates.find((x) => x.exchange === exchange);
+        if (!r) return `<td class="empty">—</td>`;
+        const role = exchange === s.long.exchange ? "long" : exchange === s.short.exchange ? "short" : "";
+        const tag = role ? `<span class="tag">${role === "long" ? "L" : "S"}</span>` : "";
+        return `<td class="${role ? `is-${role}` : ""}" title="${esc(pctHourly.format(r.rate_hourly))} per hour">
+          <span class="rate">${tag}${pct.format(r.apr)}</span></td>`;
+      }).join("");
+      return `<tr>
+        <td class="asset">${esc(a.asset)}</td>
+        <td class="spread-cell">
+          <span class="spread-value">${pct.format(s.spread_apr)}</span>
+          <span class="spread-legs">Long ${esc(name(s.long.exchange))} · Short ${esc(name(s.short.exchange))}</span>
+        </td>${cells}</tr>`;
+    }).join("");
+  }
+
+  function renderMeta() {
+    const { updated_at, failed_exchanges = [] } = state.data;
+    const when = new Date(updated_at);
+    const age = Date.now() - when.getTime();
+    const mins = Math.max(0, Math.round(age / 60000));
+    const rel = mins < 1 ? "just now" : mins < 60 ? `${mins} min ago` : `${Math.floor(mins / 60)} h ${mins % 60} min ago`;
+    const el = $("updated");
+    el.classList.toggle("stale", age > STALE_MS);
+    el.title = `UTC: ${updated_at}`;
+    el.innerHTML = `Updated <strong>${dateFmt.format(when)}</strong> (${rel})${age > STALE_MS ? " · data is stale" : ""}`;
+
+    const failed = $("failed");
+    failed.hidden = !failed_exchanges.length;
+    failed.textContent = failed_exchanges.length
+      ? `No data in this update: ${failed_exchanges.map((f) => `${name(f.exchange)} (${f.venue === "solana" ? "Solana" : "CEX"})`).join(", ")}.`
+      : "";
+  }
+
+  function render() { renderHead(); renderBody(); renderMeta(); }
+
+  async function load() {
+    try {
+      const res = await fetch(DATA_URL, { cache: "no-store" });
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      state.data = await res.json();
+      state.exchanges = exchangesFrom(state.data.assets);
+      render();
+    } catch (err) {
+      if (state.data) return;  // mantém os dados anteriores se um refresh falhar
+      const hint = location.protocol === "file:" ? " Serve the page over HTTP (e.g. python -m http.server)." : "";
+      $("body").innerHTML = `<tr><td class="status">Could not load data (${esc(err.message)}).${hint}</td></tr>`;
+    }
+  }
+
+  $("head").addEventListener("click", (e) => {
+    const btn = e.target.closest("button[data-key]");
+    if (!btn || !state.data) return;
+    const key = btn.dataset.key;
+    if (state.sortKey === key) state.sortDir = state.sortDir === "asc" ? "desc" : "asc";
+    else { state.sortKey = key; state.sortDir = key === "asset" ? "asc" : "desc"; }
+    renderHead(); renderBody();
+  });
+
+  $("search").addEventListener("input", (e) => {
+    state.query = e.target.value;
+    if (state.data) renderBody();
+  });
+
+  load();
+  setInterval(load, REFRESH_MS);
+  setInterval(() => state.data && renderMeta(), 60 * 1000);
+})();
+</script>
+</body>
+</html>

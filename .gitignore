@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+
+# Ambientes virtuais
+.venv/
+venv/
+env/
+
+# Variáveis de ambiente / segredos
+.env
+.env.*
+!.env.example
+
+# Logs e temporários
+*.log
+*.tmp
+
+# Editores / SO
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Arquivo temporário da escrita atômica do build_data.py
+public/*.json.tmp

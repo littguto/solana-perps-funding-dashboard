@@ -1,0 +1,86 @@
+name: Atualizar dados e publicar
+
+on:
+  schedule:
+    - cron: "*/30 * * * *"   # a cada 30 min (UTC); o GitHub pode atrasar alguns minutos
+  workflow_dispatch:          # botão "Run workflow" na aba Actions
+  push:
+    branches: [main]
+    paths:
+      - "public/index.html"
+      - "scripts/**"
+      - "requirements.txt"
+      - ".github/workflows/update.yml"
+
+permissions:
+  contents: write   # commitar o data.json
+  pages: write      # publicar no GitHub Pages
+  id-token: write   # exigido pelo deploy-pages
+
+# Nunca roda duas atualizações ao mesmo tempo (evita conflito no push).
+concurrency:
+  group: update-data
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+          cache: pip
+
+      - name: Instalar dependências
+        run: pip install -r requirements.txt
+
+      # Se todas as exchanges de um lado falharem, o script sai com código 1 e
+      # mantém o data.json anterior. O site continua publicado com os dados antigos.
+      - name: Gerar data.json
+        id: build
+        continue-on-error: true
+        run: python scripts/build_data.py
+
+      - name: Avisar falha na coleta
+        if: steps.build.outcome == 'failure'
+        run: echo "::warning::build_data.py falhou; data.json não foi atualizado."
+
+      - name: Commitar data.json se os dados mudaram
+        run: |
+          f=public/data.json
+          [ -f "$f" ] || { echo "Sem $f para commitar."; exit 0; }
+
+          # updated_at muda em toda execução; compara só o resto.
+          if git cat-file -e "HEAD:$f" 2>/dev/null && \
+             diff -q <(git show "HEAD:$f" | jq -S 'del(.updated_at)') \
+                     <(jq -S 'del(.updated_at)' "$f") > /dev/null; then
+            echo "Dados iguais aos do último commit; nada a commitar."
+            git checkout -- "$f"
+            exit 0
+          fi
+
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add "$f"
+          git commit -m "data: atualiza funding rates ($(date -u +%Y-%m-%dT%H:%MZ))"
+          git pull --rebase --autostash
+          git push
+
+      - uses: actions/configure-pages@v5
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: public
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
