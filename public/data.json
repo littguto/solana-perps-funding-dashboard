@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-15T22:38:09+00:00",
+  "updated_at": "2026-10-16T01:07:51+00:00",
   "failed_exchanges": [
     {
       "exchange": "binance",
@@ -14,51 +14,14 @@
   ],
   "assets": [
     {
-      "asset": "JUP",
-      "market": "JUP-PERP",
-      "rates": [
-        {
-          "exchange": "okx",
-          "venue": "cex",
-          "rate_hourly": -4.15928451276e-05,
-          "apr": -0.364353323317776
-        },
-        {
-          "exchange": "phoenix",
-          "venue": "solana",
-          "rate_hourly": -2.2328548644338118e-05,
-          "apr": -0.1955980861244019
-        },
-        {
-          "exchange": "pacifica",
-          "venue": "solana",
-          "rate_hourly": 1.25e-05,
-          "apr": 0.1095
-        }
-      ],
-      "best_spread": {
-        "long": {
-          "exchange": "okx",
-          "venue": "cex",
-          "apr": -0.364353323317776
-        },
-        "short": {
-          "exchange": "pacifica",
-          "venue": "solana",
-          "apr": 0.1095
-        },
-        "spread_apr": 0.47385332331777597
-      }
-    },
-    {
       "asset": "ZEC",
       "market": "ZEC-PERP",
       "rates": [
         {
           "exchange": "phoenix",
           "venue": "solana",
-          "rate_hourly": 6.6081602720627935e-06,
-          "apr": 0.05788748398327007
+          "rate_hourly": 7.276019855449738e-06,
+          "apr": 0.06373793393373971
         },
         {
           "exchange": "pacifica",
@@ -75,8 +38,8 @@
         {
           "exchange": "velocity",
           "venue": "solana",
-          "rate_hourly": 5.168e-05,
-          "apr": 0.4527168
+          "rate_hourly": 5.2319999999999994e-05,
+          "apr": 0.45832319999999993
         }
       ],
       "best_spread": {
@@ -88,9 +51,9 @@
         "short": {
           "exchange": "velocity",
           "venue": "solana",
-          "apr": 0.4527168
+          "apr": 0.45832319999999993
         },
-        "spread_apr": 0.3432168
+        "spread_apr": 0.34882319999999994
       }
     },
     {
@@ -100,14 +63,14 @@
         {
           "exchange": "phoenix",
           "venue": "solana",
-          "rate_hourly": -8.502988192993538e-06,
-          "apr": -0.0744861765706234
+          "rate_hourly": -3.6491467078614783e-06,
+          "apr": -0.03196652516086655
         },
         {
           "exchange": "okx",
           "venue": "cex",
-          "rate_hourly": 9.5250730920875e-06,
-          "apr": 0.0834396402866865
+          "rate_hourly": 4.4955851776875e-06,
+          "apr": 0.0393813261565425
         },
         {
           "exchange": "pacifica",
@@ -118,22 +81,22 @@
         {
           "exchange": "velocity",
           "venue": "solana",
-          "rate_hourly": 4.246e-05,
-          "apr": 0.3719496
+          "rate_hourly": 3.494e-05,
+          "apr": 0.3060744
         }
       ],
       "best_spread": {
         "long": {
           "exchange": "okx",
           "venue": "cex",
-          "apr": 0.0834396402866865
+          "apr": 0.0393813261565425
         },
         "short": {
           "exchange": "velocity",
           "venue": "solana",
-          "apr": 0.3719496
+          "apr": 0.3060744
         },
-        "spread_apr": 0.2885099597133135
+        "spread_apr": 0.26669307384345753
       }
     },
     {
@@ -143,8 +106,8 @@
         {
           "exchange": "okx",
           "venue": "cex",
-          "rate_hourly": 9.0985371477375e-06,
-          "apr": 0.0797031854141805
+          "rate_hourly": 2.7295309620125e-06,
+          "apr": 0.023910691227229497
         },
         {
           "exchange": "velocity",
@@ -161,65 +124,59 @@
         {
           "exchange": "phoenix",
           "venue": "solana",
-          "rate_hourly": 2.0988268407196672e-05,
-          "apr": 0.18385723124704284
+          "rate_hourly": 2.8033300162617412e-05,
+          "apr": 0.24557170942452852
         }
       ],
       "best_spread": {
         "long": {
           "exchange": "okx",
           "venue": "cex",
-          "apr": 0.0797031854141805
+          "apr": 0.023910691227229497
         },
         "short": {
           "exchange": "phoenix",
           "venue": "solana",
-          "apr": 0.18385723124704284
+          "apr": 0.24557170942452852
         },
-        "spread_apr": 0.10415404583286234
+        "spread_apr": 0.22166101819729903
       }
     },
     {
-      "asset": "SOL",
-      "market": "SOL-PERP",
+      "asset": "JUP",
+      "market": "JUP-PERP",
       "rates": [
-        {
-          "exchange": "phoenix",
-          "venue": "solana",
-          "rate_hourly": 7.542189120392195e-06,
-          "apr": 0.06606957669463563
-        },
         {
           "exchange": "okx",
           "venue": "cex",
-          "rate_hourly": 1.11775757644375e-05,
-          "apr": 0.0979155636964725
-        },
-        {
-          "exchange": "velocity",
-          "venue": "solana",
-          "rate_hourly": 1.25e-05,
-          "apr": 0.1095
+          "rate_hourly": -3.879895354785e-05,
+          "apr": -0.339878833079166
         },
         {
           "exchange": "pacifica",
           "venue": "solana",
-          "rate_hourly": 1.25e-05,
-          "apr": 0.1095
+          "rate_hourly": -2.305e-05,
+          "apr": -0.20191800000000001
+        },
+        {
+          "exchange": "phoenix",
+          "venue": "solana",
+          "rate_hourly": -1.9301914106482227e-05,
+          "apr": -0.16908476757278432
         }
       ],
       "best_spread": {
         "long": {
-          "exchange": "phoenix",
-          "venue": "solana",
-          "apr": 0.06606957669463563
-        },
-        "short": {
           "exchange": "okx",
           "venue": "cex",
-          "apr": 0.0979155636964725
+          "apr": -0.339878833079166
         },
-        "spread_apr": 0.03184598700183687
+        "short": {
+          "exchange": "phoenix",
+          "venue": "solana",
+          "apr": -0.16908476757278432
+        },
+        "spread_apr": 0.17079406550638168
       }
     },
     {
@@ -227,16 +184,16 @@
       "market": "ETH-PERP",
       "rates": [
         {
-          "exchange": "phoenix",
-          "venue": "solana",
-          "rate_hourly": 1.0965802940459753e-05,
-          "apr": 0.09606043375842743
-        },
-        {
           "exchange": "okx",
           "venue": "cex",
-          "rate_hourly": 1.1694775004325e-05,
-          "apr": 0.102446229037887
+          "rate_hourly": 6.37834154825e-06,
+          "apr": 0.05587427196267
+        },
+        {
+          "exchange": "phoenix",
+          "venue": "solana",
+          "rate_hourly": 7.3716111065607325e-06,
+          "apr": 0.06457531329347202
         },
         {
           "exchange": "velocity",
@@ -255,14 +212,57 @@
         "long": {
           "exchange": "okx",
           "venue": "cex",
-          "apr": 0.102446229037887
+          "apr": 0.05587427196267
         },
         "short": {
           "exchange": "velocity",
           "venue": "solana",
           "apr": 0.1095
         },
-        "spread_apr": 0.007053770962113001
+        "spread_apr": 0.05362572803733
+      }
+    },
+    {
+      "asset": "SOL",
+      "market": "SOL-PERP",
+      "rates": [
+        {
+          "exchange": "okx",
+          "venue": "cex",
+          "rate_hourly": 8.333377603675e-06,
+          "apr": 0.073000387808193
+        },
+        {
+          "exchange": "phoenix",
+          "venue": "solana",
+          "rate_hourly": 1.2310606060606061e-05,
+          "apr": 0.1078409090909091
+        },
+        {
+          "exchange": "velocity",
+          "venue": "solana",
+          "rate_hourly": 1.25e-05,
+          "apr": 0.1095
+        },
+        {
+          "exchange": "pacifica",
+          "venue": "solana",
+          "rate_hourly": 1.25e-05,
+          "apr": 0.1095
+        }
+      ],
+      "best_spread": {
+        "long": {
+          "exchange": "okx",
+          "venue": "cex",
+          "apr": 0.073000387808193
+        },
+        "short": {
+          "exchange": "velocity",
+          "venue": "solana",
+          "apr": 0.1095
+        },
+        "spread_apr": 0.036499612191807
       }
     }
   ]
